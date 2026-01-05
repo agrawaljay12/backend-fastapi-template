@@ -1,3 +1,18 @@
-./venv
-**/.env
-/_pycache_/
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# IDEs
+.vscode/
+.idea/
