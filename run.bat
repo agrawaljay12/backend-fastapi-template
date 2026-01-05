@@ -4,4 +4,4 @@
 call venv\Scripts\activate
 
 :: Run FastAPI server
-uvicorn main:app --reload
+uvicorn app.main:app --reload
