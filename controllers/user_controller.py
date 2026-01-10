@@ -4,7 +4,7 @@ from config.db import db
 from models.users import User
 from fastapi import HTTPException, Request ,status
 from bson import ObjectId 
-from core.core import hash_password,verify_password
+from core.core import hash_password,verify_password,create_access_token
 
 user_collection = db["users_database"]
 
@@ -105,7 +105,7 @@ async def login_user(request:Request):
             )
         
         #  check the user if exists with the given email or not if not then return error message. 
-        user  =  user_collection.find_one({"email":email})
+        user = user_collection.find_one({"email":email})
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -120,10 +120,20 @@ async def login_user(request:Request):
                 status_code= status.HTTP_404_BAD_REQUEST,
                 detail="Invalid password"
             )
+        
+        token_data = {
+            "user_id": str(user["_id"]),
+            "email": user["email"],
+            "name": user["name"]
+        }
+
+        access_token = create_access_token(token_data)
 
         # if user is found and password is correct and hashed then return user data    
         return ({
             "message":"Login Successful",
+            "access_token": access_token,
+            "token_type": "bearer",
             "user":{
                 "_id":str(user["_id"]),
                 "name":user["name"],
