@@ -1,5 +1,5 @@
 from fastapi import APIRouter,Request, HTTPException,status
-from controllers.user_controller import create_user
+from controllers.user_controller import create_user,login_user
 from models.users import User
 from fastapi.responses import JSONResponse
 import re
@@ -20,6 +20,7 @@ async def home():
 # http://127.0.0.1:8000/users/create
 # method : POST
 # description : create a new user
+
 @router.post("/create",response_description="Create a new user")
 async def add_user(request:Request):
     try:
@@ -58,6 +59,34 @@ async def add_user(request:Request):
                 status_code=201,
                 content={"message": "User created successfully"}
             )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+# http://127.0.0.1:8000/users/login
+# method : POST
+# description : login a user
+
+@router.post("/login",response_description="Login a user")
+async def handle_login_user(request:Request):
+    try:
+        # get the json data from request body
+        data = await request.json()
+        email = data.get("email")
+        password = data.get("password")
+
+        """call the instance of login_user function from user_controller.py
+        and pass email and password to it and return the result as json response"""
+        result = login_user(email,password)
+        if result:
+            return JSONResponse(
+                status_code=status.HTTP_200_OK,
+                content=result
+            )
+    
+    # exception handling exceptions occurs during the process and raise HTTPException
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
