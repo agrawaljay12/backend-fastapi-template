@@ -17,7 +17,7 @@ async def home():
 
     )
 
-# http://127.0.0.1:8000/users/create
+# URL:http://127.0.0.1:8000/api/v1/users/create
 # method : POST
 # description : create a new user
 
@@ -25,7 +25,8 @@ async def home():
 async def add_user(request:Request):
     return await create_user(request)
 
-# http://127.0.0.1:8000/users/login
+
+# URL: http://127.0.0.1:8000/api/v1/users/login
 # method : POST
 # description : login a user
 
