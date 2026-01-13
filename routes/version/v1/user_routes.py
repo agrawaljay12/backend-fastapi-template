@@ -1,12 +1,11 @@
 from fastapi import APIRouter,Request, HTTPException,status
 from controllers.user_controller import create_user,login_user
-from models.users import User
 from fastapi.responses import JSONResponse
 import re
 
 router = APIRouter()
 
-# url: http://127.0.0.1:8000/users/
+# url: http://127.0.0.1:8000/api/v1/users/
 # method: GET
 # description : WELCOME TO API HOME 
 @router.get('/',response_description="Welcome to the User Management API")
