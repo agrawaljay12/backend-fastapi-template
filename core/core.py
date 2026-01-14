@@ -67,3 +67,20 @@ def verify_token(token: str) -> dict:
         return payload
     except JWTError as e:
         raise JWTError(f"Token validation failed: {str(e)}")
+
+
+    # refresh token function for generating new jwt token before expiration
+def refresh_access_token(token: str) -> str:
+    try:
+        # Decode the existing token to get its payload
+        payload = jwt.decode(token, jwt_secret_key, algorithms=[jwt_algorithm])
+
+        # Remove the expiration field to create a new token
+        payload.pop("exp", None)
+
+        # Create a new access token with updated expiration
+        new_token = create_access_token(payload)
+
+        return new_token
+    except JWTError as e:
+        raise JWTError(f"Token refresh failed: {str(e)}")
