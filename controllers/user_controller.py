@@ -4,7 +4,9 @@ from config.db import db
 from models.users import User
 from fastapi import HTTPException, Request ,status
 from bson import ObjectId 
+from typing import List,Dict
 from core.core import hash_password,verify_password,create_access_token
+from datetime import datetime, timedelta
 
 user_collection = db["users_database"]
 
@@ -65,7 +67,8 @@ async def create_user(request:Request):
         result = user_collection.insert_one({
                   "name":name,
                   "email":email,
-                  "password": hashed_password
+                  "password": hashed_password,
+                  "role":"user"  # default role is 'user'   
              })
 
         # if data is inserted successfully then return success message and user id
@@ -89,6 +92,7 @@ async def login_user(request:Request):
         data = await request.json()
         email = data.get('email')
         password = data.get('password')
+    
 
         # validation for email and password fields
         if not email or not password:
@@ -104,6 +108,15 @@ async def login_user(request:Request):
                 detail="Invalid email format"
             )
         
+        # # validate password format
+        # password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Z][A-Za-z\d\W_]{7,15}$'
+        # if not re.match(password_pattern, password):
+        #         raise HTTPException(
+        #             status_code=status.HTTP_400_BAD_REQUEST,
+        #             detail="Password must be between 8 and 20 characters"
+        #         )
+            
+        
         #  check the user if exists with the given email or not if not then return error message. 
         user = user_collection.find_one({"email":email})
         if not user:
@@ -117,14 +130,15 @@ async def login_user(request:Request):
         
         if not is_password_valid:
             raise HTTPException(
-                status_code= status.HTTP_404_BAD_REQUEST,
+                status_code= status.HTTP_400_BAD_REQUEST,
                 detail="Invalid password"
             )
         
         token_data = {
             "user_id": str(user["_id"]),
             "email": user["email"],
-            "name": user["name"]
+            "name": user["name"],
+            "role": user["role"]
         }
 
         access_token = create_access_token(token_data)
@@ -134,11 +148,7 @@ async def login_user(request:Request):
             "message":"Login Successful",
             "access_token": access_token,
             "token_type": "bearer",
-            "user":{
-                "_id":str(user["_id"]),
-                "name":user["name"],
-                "email":user["email"]
-            }
+            "user":token_data
         })
      
     #  catch any exception that occurs during the process and raise HTTPException
@@ -148,5 +158,22 @@ async def login_user(request:Request):
             detail=str(e)
         )
           
-     
-   
+
+# get all users function
+
+async def get_all_users() -> list[dict]:
+    try:
+        users = []
+        for user in user_collection.find({}):
+            users.append({
+                "_id": str(user["_id"]),
+                "name": user["name"],
+                "email": user["email"],
+                "role": user.get("role", "user")
+            })
+        return users
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
