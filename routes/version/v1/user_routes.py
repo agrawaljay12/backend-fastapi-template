@@ -38,6 +38,6 @@ async def handle_login_user(request:Request):
 # method : GET
 # description : get all users
 
-@router.get("/get_all_users",response_description="Get all users",dependencies=[Depends(get_required_role(["admin"]))])
+@router.get("/fetch/all",response_description="Get all users",dependencies=[Depends(get_required_role(["admin"]))])
 async def get_all_users_route():
     return await get_all_users()
