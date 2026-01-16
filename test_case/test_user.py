@@ -17,20 +17,6 @@ def test_create_user_success():
     assert response.status_code == 200
     assert response.json()["message"] == "User created successfully"
 
-# tes case for Invalid password while creating user
-def test_create_user_invalid_password():
-
-    data ={
-        "name": "Test User",
-        "email": "test@gmail.com",
-        "password": "1234"
-    }
-
-    response = client.post("/api/v1/users/create",json=data)
-
-    assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid password format"
-
 # test case for Invalid password format ,email format ,Invalid name format , Invalid email already exists
 def test_create_user_invalid_email_format():
 
@@ -70,20 +56,6 @@ def test_create_user_invalid_password_format():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Invalid password format"
-
-# def test_create_user_email_already_exists():
-
-#      data ={
-#         "name": "test user123",
-#         "email": "test@gmail.com",
-#         "password": "Test@1234"
-#     }
-
-#      response = client.post("/api/v1/users/create",json=data)
-
-#      assert response.status_code == 400
-#      assert response.json()["detail"] == "Invalid name format"
-
 
 #  test case for login user endpoint
 def test_login_success():
