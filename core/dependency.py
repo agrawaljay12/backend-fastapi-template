@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import Depends,HTTPException,status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -28,3 +29,43 @@ def get_active_user(current_user:dict=Depends(get_current_user)):
             detail="Inactive user"
         )
     return current_user
+
+# create role-based authorization dependency
+# “Only users with specific roles are allowed to access this API.”
+
+"""this function is used for check the user role 
+   it takes a list of required roles as input and returns a dependency function
+   example: get_required_roles(['admin','user'])
+   In short It set the required roles for accessing a particular endpoint.
+"""
+def get_required_role(required_roles: List[str]):
+
+    """It check the role of the current user against the required roles
+    current_user: dict = Depends(get_current_user: This function is calls dependency to get the current user information from the JWT token.
+    This get_current_user function is extracted  token from the request and decodes it to get user information and return the user data from token."""
+    def check_role(current_user: dict = Depends(get_current_user)):
+
+        # Extract the user's role from the current user information
+        user_role = current_user.get("role")
+
+        # if user role is missing in token then raise HTTPException
+        if not user_role:
+            raise HTTPException(
+                status_code=403,
+                detail="Role information missing in token"
+            )
+
+        # Check if the user's role is in the list of required roles and raise an HTTPException if not
+        if user_role not in required_roles:
+            raise HTTPException(
+                status_code= status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required role(s):{required_roles}"
+            )
+
+        # If the user's role is valid, return the current user information
+        return current_user
+    return check_role
+
+# Example usage:
+# require_user = required role[user]
+# require_admin = required role[admin]
