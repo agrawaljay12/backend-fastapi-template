@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends,Request, HTTPException,status
-from controllers.user_controller import create_user,login_user,get_all_users
+from controllers.user_controller import create_user, get_all_users,login_user
+from core.dependency import get_required_role
 from fastapi.responses import JSONResponse
-from core.dependency import  get_required_role
+# from config.db import get_database
 import re
+
 
 router = APIRouter()
 
@@ -34,7 +36,8 @@ async def add_user(request:Request):
 async def handle_login_user(request:Request):
    return await login_user(request)
 
-# URL: http://127.0.0.1:8000/api/v1/users/get_all_users
+
+# URL: http://127.0.0.1:8000/api/v1/users/fetch/all
 # method : GET
 # description : get all users
 
