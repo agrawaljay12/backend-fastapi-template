@@ -6,7 +6,7 @@ from fastapi import HTTPException, Request ,status
 from bson import ObjectId 
 from typing import List,Dict
 from core.core import hash_password,verify_password,create_access_token
-from datetime import datetime, timedelta
+from core import message
 
 user_collection = db["users"]
 
@@ -26,39 +26,38 @@ async def create_user(request:Request):
         # validation for all required fields
         if not name or not email or not password:
             raise HTTPException(
-                status_code=400,
-                detail = "Name, email and password are required fields"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail = message.REQUIRED_FIELDS_MISSING
             )
         
         # validate name format
-        if not name.replace(" ", "").isalpha():
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid name format"
-            )
-                 
+        if not re.match(r'^[a-zA-Z ]+$', name):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=message.NAME
+                )
+            
         # validate email format
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        if not re.match(email_pattern, email):
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid email format"
-            )
-
+        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=message.INVALID_EMAIL_FORMAT
+                )
+            
         # validate password format
         password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Z][A-Za-z\d\W_]{7,15}$'
         if not re.match(password_pattern, password):
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid password format"
-            )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=message.INVALID_PASSWORD_FORMAT
+                )
             
 
         #  check the user if already exists with the same email then return error message.
         if user_collection.find_one({"email":data["email"]}):
                 raise HTTPException(
-                    status_code = 400,
-                    detail = "User with this email already exists"
+                    status_code = status.HTTP_400_BAD_REQUEST,
+                    detail = message.USER_ALREADY_EXISTS
                 )
 
         # convert the plain password to hashed password before storing in database that user entered
