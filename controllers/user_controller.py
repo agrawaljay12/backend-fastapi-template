@@ -5,6 +5,7 @@ from models.users import User
 from fastapi import HTTPException, Request ,status
 from bson import ObjectId 
 from core.core import hash_password,verify_password,create_access_token
+from core import message
 
 user_collection = db["users_database"]
 
@@ -24,21 +25,21 @@ async def create_user(request:Request):
         if not name or not email or not password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail = "Name, email and password are required fields"
+                detail = message.REQUIRED_FIELDS_MISSING
             )
         
         # validate name format
         if not re.match(r'^[a-zA-Z ]+$', name):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Name must contain only letters"
+                    detail=message.NAME
                 )
             
         # validate email format
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Invalid email format"
+                    detail=message.INVALID_EMAIL_FORMAT
                 )
             
         # validate password format
@@ -46,7 +47,7 @@ async def create_user(request:Request):
         if not re.match(password_pattern, password):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Password must be between 8 and 20 characters"
+                    detail=message.INVALID_PASSWORD_FORMAT
                 )
             
 
@@ -55,7 +56,7 @@ async def create_user(request:Request):
         if user:
                 raise HTTPException(
                     status_code = status.HTTP_400_BAD_REQUEST,
-                    detail = "User with this email already exists"
+                    detail = message.USER_ALREADY_EXISTS
                 )
 
         # convert the plain password to hashed password before storing in database that user entered
