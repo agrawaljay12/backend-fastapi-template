@@ -3,8 +3,8 @@ import re
 from config.db import db
 from models.users import User
 from fastapi import HTTPException, Request ,status
-from bson import ObjectId 
-from typing import List,Dict
+# from bson import ObjectId 
+# from typing import List,Dict
 from core.core import hash_password,verify_password,create_access_token
 from core import message
 
@@ -31,34 +31,34 @@ async def create_user(request:Request):
             )
         
         # validate name format
-        if not re.match(r'^[a-zA-Z ]+$', name):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=message.NAME
-                )
+        if name.replace(" ","").isalpha():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=message.INVALID_NAME_FORMAT
+            )
             
         # validate email format
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=message.INVALID_EMAIL_FORMAT
-                )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=message.INVALID_EMAIL_FORMAT
+            )
             
         # validate password format
         password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Z][A-Za-z\d\W_]{7,15}$'
         if not re.match(password_pattern, password):
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=message.INVALID_PASSWORD_FORMAT
-                )
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=message.INVALID_PASSWORD_FORMAT
+            )
             
 
         #  check the user if already exists with the same email then return error message.
         if user_collection.find_one({"email":data["email"]}):
-                raise HTTPException(
-                    status_code = status.HTTP_400_BAD_REQUEST,
-                    detail = message.USER_ALREADY_EXISTS
-                )
+            raise HTTPException(
+                status_code = status.HTTP_400_BAD_REQUEST,
+                detail = message.USER_ALREADY_EXISTS
+            )
 
         # convert the plain password to hashed password before storing in database that user entered
         hashed_password = hash_password(password) 
