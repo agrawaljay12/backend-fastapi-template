@@ -31,7 +31,7 @@ async def create_user(request:Request):
             )
         
         # validate name format
-        if name.replace(" ","").isalpha():
+        if not name.replace(" ","").isalpha():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=message.INVALID_NAME_FORMAT
