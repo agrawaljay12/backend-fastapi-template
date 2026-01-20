@@ -2,7 +2,7 @@
 import hashlib
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 from dotenv import load_dotenv
 import os
@@ -15,20 +15,18 @@ jwt_algorithm = os.getenv("JWT_ALGORITHM")
 access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 # create a CryptContext object for hashing passwords
-pwd_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2"],deprecated="auto")
 
 
 # ---------------------password hashing functions ---------------------
 
 # add the hash password function for plain text password hashing
-def hash_password(password:str)->str:
-      if not isinstance(password,str):
-            raise ValueError("Password must be a string")
-      return pwd_context.hash(password)
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)
 
 # add the verify password function for plain text and hashed password comparison
-def verify_password(plain_password:str,hashed_password:str)->bool:
-        return pwd_context.verify(plain_password,hashed_password)
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
 
 
 # --------------------- JWT token functions ---------------------
@@ -40,7 +38,7 @@ def create_access_token(data:dict):  #
     to_encode = data.copy()
 
     # Set the expiration time for the token
-    expire = datetime.utcnow() + timedelta(minutes=access_token_expire_minutes)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=access_token_expire_minutes)
 
     # # Add the expiration timestamp to the token payload
     to_encode.update({"exp": expire})
