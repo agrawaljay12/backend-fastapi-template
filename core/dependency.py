@@ -1,6 +1,7 @@
 from typing import List
 from typing import List
 from fastapi import Depends,HTTPException,status
+from core import http_status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
@@ -20,7 +21,7 @@ def get_current_user(token:str=Depends(oauth2_scheme)):
         return payload
     except JWTError:
        raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
+        status_code=http_status.UNAUTHORIZED,
         detail="Invalid credentials"
     )
 
@@ -28,7 +29,7 @@ def get_current_user(token:str=Depends(oauth2_scheme)):
 def get_active_user(current_user:dict=Depends(get_current_user)):
     if not current_user.get("is_active", False):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=http_status.BAD_REQUEST,
             detail="Inactive user"
         )
     return current_user
@@ -54,14 +55,14 @@ def get_required_role(required_roles: List[str]):
         # if user role is missing in token then raise HTTPException
         if not user_role:
             raise HTTPException(
-                status_code=403,
+                status_code=http_status.FORBIDDEN,
                 detail="Role information missing in token"
             )
 
         # Check if the user's role is in the list of required roles and raise an HTTPException if not
         if user_role not in required_roles:
             raise HTTPException(
-                status_code= status.HTTP_403_FORBIDDEN,
+                status_code=http_status.FORBIDDEN,
                 detail=f"Access denied. Required role(s):{required_roles}"
             )
         
