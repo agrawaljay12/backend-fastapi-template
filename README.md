@@ -54,37 +54,58 @@ This is a starter template for building FastAPI applications following clean arc
 | **API Docs** | Swagger UI / ReDoc |
 
 ---
+### backend folder structure 
 
-## 📁 Project Structure
-
-```
 backend-template/
-├── app/
-│   ├── main.py                    # Application entry point
-│   ├── server.py                  # FastAPI server creation
-│   └── routes_register.py         # Route registration
 │
-├── config/
-│   └── db.py                      # Database configuration
+├── app/                         # Application entry & setup
+│   ├── __init__.py
+│   ├── main.py                  # App entry point (uvicorn runs this)
+│   ├── server.py                # FastAPI app creation
+│   └── routes_register.py       # Route registration
 │
-├── models/
-│   └── users.py                   # Database models & schemas
+├── config/                      # Configuration
+│   ├── __init__.py
+│   └── db.py                    # Database connection (Mongo / SQL)
 │
-├── controllers/
-│   └── user_controller.py         # Business logic & handlers
+├── core/                        # Core shared utilities
+│   ├── __init__.py
+│   ├── core.py                  # Settings / env loader
+│   ├── dependency.py            # Common dependencies (JWT, DB)
+│   └── messages.py              # ✅ Centralized messages (ADD THIS)
 │
-├── routes/
-│   └── user_routes.py             # API endpoint definitions
+├── models/                      # DB models
+│   ├── __init__.py
+│   └── users.py                 # User DB model
 │
-├── .env.example                   # Environment variables template
-├── requirement.txt                # Python dependencies
-├── setup.bat                      # Setup script (Windows)
-├── run.bat                        # Run script (Windows)
-├── .gitignore                     # Git ignore rules
-└── README.md                      # Project documentation
-```
+├── schemas/                     # Request/Response schemas (ADD)
+│   ├── __init__.py
+│   └── user_schema.py           # Pydantic schemas
+│
+├── controllers/                 # Business logic
+│   ├── __init__.py
+│   └── user_controller.py
+│
+├── routes/                      # API routes
+│   ├── __init__.py
+│   ├── v1/                      # API versioning (OPTIONAL BUT PRO)
+│   │   ├── __init__.py
+│   │   └── user_routes.py
+│
+├── tests/                       # Test cases
+│   ├── __init__.py
+│   └── test_user.py
+│
+├── venv/                        # Virtual environment (ignored)
+├── .env                         # Environment variables (ignored)
+├── .env.example                 # Env template
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── setup.bat
+└── run.bat
 
----
+
 
 ## 🏗️ Architecture Pattern: MVC
 

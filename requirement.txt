@@ -1,9 +1,11 @@
 # ===============================
 # CORE FASTAPI STACK
 # ===============================
-fastapi==0.104.1
-uvicorn==0.24.0
-python-dotenv
+fastapi>=0.110,<0.112
+starlette>=0.36,<0.38
+uvicorn[standard]>=0.27
+
+python-dotenv>=1.0
 
 # ===============================
 # DATA VALIDATION & SETTINGS
@@ -14,84 +16,88 @@ pydantic-settings>=2.2
 # ===============================
 # DATABASE (SQL)
 # ===============================
-sqlalchemy>=2.0
-alembic>=1.13
+sqlalchemy>=2.0.25
+alembic>=1.13.1
 
-# PostgreSQL (choose ONE as needed)
-psycopg2-binary>=2.9        # Sync PostgreSQL
-asyncpg>=0.29              # Async PostgreSQL
+# PostgreSQL (choose ONE)
+psycopg2-binary>=2.9.9
+asyncpg>=0.29.0
 
 # ===============================
 # DATABASE (NOSQL – MongoDB)
 # ===============================
-motor>=3.4
-pymongo>=4.6
+pymongo>=4.6.1
+motor>=3.5.1
 
 # ===============================
 # AUTHENTICATION & SECURITY
 # ===============================
-python-jose[cryptography]>=3.3
-passlib[bcrypt]>=1.7.4
-bcrypt>=4.0.1
-pwdlib>=0.3.0
+python-jose[cryptography]>=3.3.0
+
+# ✔ Stable + recommended
+passlib[argon2]>=1.7.4
+argon2-cffi>=23.1.0
+
+# ❌ bcrypt kept OPTIONAL (avoid default usage)
+bcrypt>=4.1.2
 
 # ===============================
 # FILE UPLOADS & FORMS
 # ===============================
-python-multipart
-aiofiles
+python-multipart>=0.0.20
+aiofiles>=23.2.1
 
 # ===============================
 # EMAIL SUPPORT
 # ===============================
-fastapi-mail>=1.4
-email-validator>=2.1
+fastapi-mail>=1.4.1
+email-validator>=2.1.1
 
 # ===============================
 # CACHING & REDIS
 # ===============================
-redis>=5.0
+redis>=5.0.2
 
 # ===============================
 # HTTP CLIENT
 # ===============================
-httpx>=0.27
-requests>=2.31
+httpx>=0.27.0
+requests>=2.31.0
 
 # ===============================
 # REALTIME (WEBSOCKETS / SOCKET.IO)
 # ===============================
 websockets>=12.0
-python-socketio>=5.11
+python-socketio>=5.11.2
 
 # ===============================
-# BACKGROUND TASKS (OPTIONAL)
+# BACKGROUND TASKS
 # ===============================
-celery>=5.3
-apscheduler>=3.10
+celery>=5.3.6
+apscheduler>=3.10.4
 
 # ===============================
 # LOGGING & MONITORING
 # ===============================
-loguru>=0.7
-prometheus-client>=0.20
+loguru>=0.7.2
+prometheus-client>=0.20.0
 
 # ===============================
 # JSON PERFORMANCE
 # ===============================
-orjson>=3.10
+orjson>=3.10.1
 
 # ===============================
 # TESTING
 # ===============================
-pytest>=8.1
-pytest-asyncio>=0.23
-pytest-cov>=4.1
+pytest>=8.2.0
+pytest-asyncio>=0.23.6
+pytest-cov>=4.1.0
 
 # ===============================
-# DEV TOOLS (OPTIONAL)
+# DEV TOOLS
 # ===============================
-black>=24.3
-isort>=5.13
-flake8>=7.0
-mypy>=1.9
+black>=24.4.2
+isort>=5.13.2
+flake8>=7.1.0
+mypy>=1.10.0
