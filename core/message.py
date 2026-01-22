@@ -3,7 +3,7 @@ USER_CREATED_SUCCESS = "User created successfully"
 USER_ALREADY_EXISTS = "User with this email already exists"
 USER_NOT_FOUND = "User not found"
 INVALID_PASSWORD = "Invalid password"
-LOGIN_SUCCESS = "Login successful"
+LOGIN_SUCCESS = "Login Successful"
 INVALID_NAME_FORMAT = "Invalid name format"
 
 # Validation messages
