@@ -8,6 +8,7 @@ from fastapi import HTTPException, Request ,status
 from core.core import hash_password,verify_password,create_access_token
 from core import message
 from core import http_status
+from core import response
 
 user_collection = db["users"]
 
@@ -73,11 +74,16 @@ async def create_user(request:Request):
         result = user_collection.insert_one(user_data.model_dump())
 
         # if data is inserted successfully then return success message and user id
-        return ({
-            "status_code": http_status.CREATED,
-            "message":"User created successfully",
-            "user_id": str(result.inserted_id)
-        })
+        return response.create_success_response(
+            status=http_status.CREATED,
+            message=message.USER_CREATED_SUCCESS,
+            data={"user_id": str(result.inserted_id)}
+        )
+        # return ({
+        #     "status_code": http_status.CREATED,
+        #     "message":"User created successfully",
+        #     "user_id": str(result.inserted_id)
+        # })
      
     # Re-raise validation errors
     except HTTPException as e:
@@ -97,14 +103,14 @@ async def login_user(request:Request):
         if not email or not password:
             raise HTTPException(
                 status_code=http_status.BAD_REQUEST,
-                detail="Email and password are required fields"
+                detail=message.REQUIRED_FIELDS_MISSING
             )
         
         # validate the email format
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
             raise HTTPException(
                 status_code=http_status.BAD_REQUEST,
-                detail="Invalid email format"
+                detail=message.INVALID_EMAIL_FORMAT
             )          
         
         #  check the user if exists with the given email or not if not then return error message. 
@@ -112,14 +118,14 @@ async def login_user(request:Request):
         if not user:
             raise HTTPException(
                 status_code=http_status.NOT_FOUND,
-                detail="User not found"
+                detail=message.USER_NOT_FOUND
             )
         
         # verify the plain password with hashed password stored in database      
         if not verify_password(password,user['password']) :
             raise HTTPException(
                 status_code= http_status.UNAUTHORIZED,
-                detail="Invalid password"
+                detail=message.INVALID_PASSWORD
             )
         
         token_data = {
@@ -131,13 +137,21 @@ async def login_user(request:Request):
 
         access_token = create_access_token(token_data)
 
-        # if user is found and password is correct and hashed then return user data    
-        return ({
-            "message":"Login Successful",
-            "access_token": access_token,
-            "token_type": "bearer",
-            "user":token_data
-        })
+        # if user is found and password is correct and hashed then return user data  
+        return response.success_response(
+            message.LOGIN_SUCCESS,
+            data={
+                "access_token": access_token,
+                "token_type": "bearer",
+                "user": token_data
+            }
+        )  
+        # return ({
+        #     "message":"Login Successful",
+        #     "access_token": access_token,
+        #     "token_type": "bearer",
+        #     "user":token_data
+        # })
      
      # Re-raise validation errors
      except HTTPException as e:
