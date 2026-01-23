@@ -17,8 +17,10 @@ def test_create_user_success():
 
     response = client.post("/api/v1/users/create", json=data)
 
-    assert response.status_code == 200
-
+    assert response.status_code == 201 # check HTTP status code with returned status code
+    assert response.json()["status"] == 201 # check status code in response body
+    assert response.json()["message"] == "User created successfully"
+    assert "user_id" in response.json()["data"]
 
 # test case for Invalid password format ,email format ,Invalid name format , Invalid email already exists
 def test_create_user_invalid_email_format():
@@ -79,8 +81,9 @@ def test_login_success():
     response = client.post("/api/v1/users/login", json=login_payload)
 
     assert response.status_code == 200
+    assert response.json()["status"] == 200  # Check status in body
     assert response.json()["message"] == "Login Successful"
-
+    assert "access_token" in response.json()["data"]
 # test case for Invalid login
 
 def test_login_invalid_password():
