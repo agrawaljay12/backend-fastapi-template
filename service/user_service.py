@@ -1,52 +1,35 @@
 import re
+from attrs import validate
 from config.db import db
 from models.users import User
-from fastapi import HTTPException, Request ,status
+from fastapi import HTTPException
 from core.core import hash_password,verify_password,create_access_token
 from core import message
 from core import http_status
 from core import response
-
+from core import validation
 user_collection = db["users"]
 
 # create a new user function
 def create_user_service(data:dict):
     try:
 
-        name = data["name"]
-        email = data["email"]
-        password = data["password"]
+        name = data.get("name")
+        email = data.get("email")
+        password = data.get("password")
 
-        # --------------------------validations logic for fields ----------------------------
-        # validation for all required fields
-        if not name or not email or not password:
-            raise HTTPException(
-                status_code=http_status.BAD_REQUEST,
-                detail = message.REQUIRED_FIELDS_MISSING
-            )
-        
+        # -----------------validate input fields-------------------
+        # validate all required fields
+        validation.validate_data(data)
+
         # validate name format
-        if not name.replace(" ","").isalpha():
-            raise HTTPException(
-                status_code=http_status.BAD_REQUEST,
-                detail=message.INVALID_NAME_FORMAT
-            )
-            
+        validation.validate_name(name)
+
         # validate email format
-        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
-            raise HTTPException(
-                status_code=http_status.BAD_REQUEST,
-                detail=message.INVALID_EMAIL_FORMAT
-            )
-            
+        validation.validate_email(email)
+
         # validate password format
-        password_pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[A-Z][A-Za-z\d\W_]{7,15}$'
-        if not re.match(password_pattern, password):
-            raise HTTPException(
-                status_code=http_status.BAD_REQUEST,
-                detail=message.INVALID_PASSWORD_FORMAT
-            )
-            
+        validation.validate_password(password)
 
         #  check the user if already exists with the same email then return error message.
         if user_collection.find_one({"email":email}):
@@ -56,12 +39,12 @@ def create_user_service(data:dict):
             )
 
         # convert the plain password to hashed password before storing in database that user entered
-        hashed_password = hash_password(data["password"]) 
+        hashed_password = hash_password(password) 
 
         # insert the user data into the database
         user_data = User(
-            name=data["name"],
-            email=data["email"],
+            name=name,
+            email=email,
             password=hashed_password
         )
         result = user_collection.insert_one(user_data.model_dump())
@@ -92,12 +75,8 @@ def login_user_service(email:str,password:str):
                 detail=message.REQUIRED_FIELDS_MISSING
             )
         
-        # validate the email format
-        if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
-            raise HTTPException(
-                status_code=http_status.BAD_REQUEST,
-                detail=message.INVALID_EMAIL_FORMAT
-            )          
+        # validate email format
+        validation.validate_email(email)   
         
         #  check the user if exists with the given email or not if not then return error message. 
         user = user_collection.find_one({"email":email})
@@ -154,7 +133,11 @@ def get_all_users_service() -> list[dict]:
                 "email": user["email"],
                 "role": user.get("role", "user")
             })
-        return users
+        return response.success_response(
+            message.USER_FETCH_SUCCESS,
+            data=users
+        )
+    
     except Exception as e:
         raise HTTPException(
             status_code=http_status.INTERNAL_SERVER_ERROR,

@@ -5,6 +5,7 @@ USER_NOT_FOUND = "User not found"
 INVALID_PASSWORD = "Invalid password"
 LOGIN_SUCCESS = "Login Successful"
 INVALID_NAME_FORMAT = "Invalid name format"
+USER_FETCH_SUCCESS = "Users fetched successfully"
 
 # Validation messages
 REQUIRED_FIELDS_MISSING = "Required fields are missing"
