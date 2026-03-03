@@ -1,5 +1,3 @@
-import re
-from attrs import validate
 from config.db import db
 from models.users import User
 from fastapi import HTTPException
