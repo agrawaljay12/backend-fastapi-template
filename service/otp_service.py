@@ -1,2 +1,2 @@
-from config.db import db
+from config.nosql_db import db
 

@@ -1,4 +1,4 @@
-from config.db import db
+from config.db_factory import get_database
 from models.users import User
 from fastapi import HTTPException
 from core.core import hash_password,verify_password,create_access_token
@@ -6,6 +6,7 @@ from core import message
 from core import http_status
 from core import response
 from core import validation
+db = get_database()
 user_collection = db["users"]
 
 # create a new user function
