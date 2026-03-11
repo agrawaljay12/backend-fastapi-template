@@ -1,25 +1,19 @@
-import os 
-from config.sql_db import get_sql_db
-from config.nosql_db import get_mongodb_db
+import os
 from dotenv import load_dotenv
+from config.nosql_db import get_mongo_db
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
-db_type = os.getenv("DB_TYPE")
+DB_TYPE = os.getenv("DB_TYPE")
 
 def get_database():
 
-    if db_type == "mongodb":
-        return get_mongodb_db()
+    if DB_TYPE == "mongodb":
+        return get_mongo_db()
 
-    elif db_type == "postgres":
-        return get_sql_db()
-
-    elif db_type == "mysql":
-        return get_sql_db()
-
-    elif db_type == "sqlite":
+    elif DB_TYPE in ["postgresql", "mysql", "sqlite"]:
+        from config.sql_db import get_sql_db
         return get_sql_db()
 
     else:
-        raise Exception("Invalid Database Type")
+        raise Exception("Invalid DB_TYPE")

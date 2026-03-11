@@ -2,21 +2,14 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
 
-# Load environment variables from .env file
-mongodb_url =  os.getenv("mongodb_url")
-mongodb_name = os.getenv("mongodb_name", "fastapi_db")
+MONGO_URL = os.getenv("MONGODB_URL")
+DB_NAME = os.getenv("MONGODB_DB_NAME")
 
-# Initialize MongoDB client and database
-client = MongoClient(mongodb_url)
-db = client[mongodb_name]
+client = MongoClient(MONGO_URL)
 
-# function to get the MongoDB database instance
-def get_mongodb_db():
-    return db
+mongo_db = client[DB_NAME]
 
-
-
-
-
+def get_mongo_db():
+    return mongo_db

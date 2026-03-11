@@ -6,7 +6,9 @@ from core import message
 from core import http_status
 from core import response
 from core import validation
+
 db = get_database()
+
 user_collection = db["users"]
 
 # create a new user function
