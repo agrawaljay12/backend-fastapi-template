@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends,Request, HTTPException,status
+from fastapi import APIRouter, Depends,Request, status
 from controllers.user_controller import create_user, get_all_users,login_user
 from core.dependency import get_required_role
 from fastapi.responses import JSONResponse
@@ -8,7 +8,7 @@ import re
 
 router = APIRouter()
 
-# url: http://127.0.0.1:8000/api/v1/users/
+# url: http://localhost:127.0.0.1:8000/api/v1/users/
 # method: GET
 # description : WELCOME TO API HOME 
 @router.get('/',response_description="Welcome to the User Management API")
