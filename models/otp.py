@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class OTP(BaseModel):
     email: str
     otp: str

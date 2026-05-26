@@ -101,3 +101,9 @@ black>=24.4.2
 isort>=5.13.2
 flake8>=7.1.0
 mypy>=1.10.0
+
+razorpay>=1.4.2
+cloudinary==1.40.0
+requests==2.31.0
+resend==2.4.0
+sendgrid
