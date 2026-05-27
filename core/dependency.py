@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
 from typing import List
+from core.core import verify_token
 
 
 oauth2_scheme =  OAuth2PasswordBearer(tokenUrl="/users/login")
@@ -17,8 +18,16 @@ jwt_algorithm = os.getenv("JWT_ALGORITHM")
 # create get current user function for extracting and verifying jwt token from request
 def get_current_user(token:str=Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, jwt_secret_key, algorithms=[jwt_algorithm])
+        payload = verify_token(token)
+        
+        if not payload:
+            raise HTTPException(
+                status_code=http_status.UNAUTHORIZED,
+                detail="Invalid token or No token is provided"
+            )
+        
         return payload
+    
     except JWTError:
        raise HTTPException(
         status_code=http_status.UNAUTHORIZED,
@@ -44,31 +53,37 @@ def get_active_user(current_user:dict=Depends(get_current_user)):
 """
 def get_required_role(required_roles: List[str]):
 
-    """It check the role of the current user against the required roles
-    current_user: dict = Depends(get_current_user: This function is calls dependency to get the current user information from the JWT token.
-    This get_current_user function is extracted  token from the request and decodes it to get user information and return the user data from token."""
-    def check_role(current_user: dict = Depends(get_current_user)):
+    try:
+        """It check the role of the current user against the required roles
+        current_user: dict = Depends(get_current_user: This function is calls dependency to get the current user information from the JWT token.
+        This get_current_user function is extracted  token from the request and decodes it to get user information and return the user data from token."""
+        def check_role(current_user: dict = Depends(get_current_user)):
 
-        # Extract the user's role from the current user information
-        user_role = current_user.get("role")
+            # Extract the user's role from the current user information
+            user_role = current_user.get("role")
 
-        # if user role is missing in token then raise HTTPException
-        if not user_role:
-            raise HTTPException(
-                status_code=http_status.FORBIDDEN,
-                detail="Role information missing in token"
-            )
+            # if user role is missing in token then raise HTTPException
+            if not user_role:
+                raise HTTPException(
+                    status_code=http_status.FORBIDDEN,
+                    detail="Role information missing in token"
+                )
 
-        # Check if the user's role is in the list of required roles and raise an HTTPException if not
-        if user_role not in required_roles:
-            raise HTTPException(
-                status_code=http_status.FORBIDDEN,
-                detail=f"Access denied. Required role(s):{required_roles}"
-            )
-        
-        # If the user's role is valid, return the current user information
-        return current_user
-    return check_role
+            # Check if the user's role is in the list of required roles and raise an HTTPException if not
+            if user_role not in required_roles:
+                raise HTTPException(
+                    status_code=http_status.FORBIDDEN,
+                    detail=f"Access denied. Required role(s):{required_roles}"
+                )
+            
+            # If the user's role is valid, return the current user information
+            return current_user
+        return check_role
+    except JWTError:
+       raise HTTPException(
+        status_code=http_status.UNAUTHORIZED,
+        detail="Invalid credentials"
+    )
 
 # Example usage:
 # require_user = required role[user]

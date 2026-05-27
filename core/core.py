@@ -3,6 +3,7 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 import os
+from fastapi import HTTPException,status
 
 if("ENVIRONMENT")=="development":
     load_dotenv(".env.development")  # Load environment variables from .env file
@@ -13,6 +14,7 @@ else:
 jwt_secret_key = os.getenv("JWT_SECRET_KEY")
 jwt_algorithm = os.getenv("JWT_ALGORITHM")
 access_token_expire_minutes = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+refresh_token_expire_days = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS"))
 
 # create a CryptContext object for hashing passwords
 pwd_context = CryptContext(schemes=["argon2"],deprecated="auto")
@@ -33,21 +35,31 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # create access token function for  generate jwt token creation
 def create_access_token(data:dict):  #
+    try:
+        # Create a copy of the input data to avoid modifying the original dictionary
+        to_encode = data.copy()
 
-    # Create a copy of the input data to avoid modifying the original dictionary
-    to_encode = data.copy()
+        # Set the expiration time for the token
+        expire = datetime.now(timezone.utc) + timedelta(minutes=access_token_expire_minutes)
 
-    # Set the expiration time for the token
-    expire = datetime.now(timezone.utc) + timedelta(minutes=access_token_expire_minutes)
+        # # Add the expiration timestamp to the token payload
+        to_encode.update({"exp": expire})
 
-    # # Add the expiration timestamp to the token payload
-    to_encode.update({"exp": expire})
+        # Encode the token with the secret key and algorithm
+        encoded_jwt = jwt.encode(to_encode, jwt_secret_key, algorithm=jwt_algorithm)
 
-    # Encode the token with the secret key and algorithm
-    encoded_jwt = jwt.encode(to_encode, jwt_secret_key, algorithm=jwt_algorithm)
+        # Return the encoded JWT token
+        return encoded_jwt
+    
+    except HTTPException as e:
+        raise e
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"failed to create token:{str(e)}"
+        )
 
-    # Return the encoded JWT token
-    return encoded_jwt
 
 # Verify and decode JWT token
 def verify_token(token: str) -> dict:
@@ -67,18 +79,29 @@ def verify_token(token: str) -> dict:
         raise JWTError(f"Token validation failed: {str(e)}")
 
 
-    # refresh token function for generating new jwt token before expiration
-def refresh_access_token(token: str) -> str:
+# refresh token function for generating new jwt token before expiration
+def refresh_access_token(data:dict):  #
     try:
-        # Decode the existing token to get its payload
-        payload = jwt.decode(token, jwt_secret_key, algorithms=[jwt_algorithm])
+        # Create a copy of the input data to avoid modifying the original dictionary
+        to_encode = data.copy()
 
-        # Remove the expiration field to create a new token
-        payload.pop("exp", None)
+        # Set the expiration time for the token
+        expire = datetime.now(timezone.utc) + timedelta(days=refresh_token_expire_days)
 
-        # Create a new access token with updated expiration
-        new_token = create_access_token(payload)
+        # # Add the expiration timestamp to the token payload
+        to_encode.update({"exp": expire})
 
-        return new_token
-    except JWTError as e:
-        raise JWTError(f"Token refresh failed: {str(e)}")
+        # Encode the token with the secret key and algorithm
+        encoded_jwt = jwt.encode(to_encode, jwt_secret_key, algorithm=jwt_algorithm)
+
+        # Return the encoded JWT token
+        return encoded_jwt
+    
+    except HTTPException as e:
+        raise e
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"failed to create token:{str(e)}"
+        )
