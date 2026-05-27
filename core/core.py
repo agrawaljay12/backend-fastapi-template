@@ -1,13 +1,13 @@
-# import the passlib library for password hashing
-import hashlib
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # Load environment variables from .env file
+if("ENVIRONMENT")=="development":
+    load_dotenv(".env.development")  # Load environment variables from .env file
+else:
+    load_dotenv()
 
 # Load environment variables for JWT configuration
 jwt_secret_key = os.getenv("JWT_SECRET_KEY")

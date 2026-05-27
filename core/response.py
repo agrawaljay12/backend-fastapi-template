@@ -23,7 +23,7 @@ def created_response(message:str, data=None,status=http_status.CREATED):
         }
     )
 
-def error_response(message:message.INTERNAL_SERVER_ERROR, status=http_status.BAD_REQUEST):
+def error_response(message:str, status=http_status.BAD_REQUEST):
     return JSONResponse(
         status_code=status,
         content={

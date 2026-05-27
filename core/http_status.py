@@ -1,6 +1,5 @@
 from fastapi import status
 
-
 BAD_REQUEST = status.HTTP_400_BAD_REQUEST
 UNAUTHORIZED = status.HTTP_401_UNAUTHORIZED
 FORBIDDEN = status.HTTP_403_FORBIDDEN

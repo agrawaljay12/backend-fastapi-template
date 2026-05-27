@@ -1,5 +1,4 @@
 from fastapi import Request
-
 from service.otp_service import send_otp, verify_otp
 
 async def send_otp_controller(request:Request):

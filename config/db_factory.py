@@ -2,7 +2,10 @@ import os
 from dotenv import load_dotenv
 from config.nosql_db import get_mongo_db
 
-load_dotenv()
+if("ENVIRONMENT") == "development":
+    load_dotenv(".env.development")
+else:
+    load_dotenv()
 
 DB_TYPE = os.getenv("DB_TYPE")
 
