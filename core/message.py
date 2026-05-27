@@ -15,3 +15,4 @@ INVALID_PASSWORD_FORMAT = "Invalid password format"
 # Auth messages
 UNAUTHORIZED = "Unauthorized access"
 TOKEN_EXPIRED = "Token has expired"
+INTERNAL_SERVER_ERROR = "Internal Server Error"
