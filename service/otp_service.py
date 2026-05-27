@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from config.db_factory import get_database
 from core.validation import validate_email
 from core.response import created_response,success_response,error_response
@@ -49,13 +50,21 @@ def send_otp(email:str):
         email_body = send_otp_html(otp)
         send_email(to_email=email, subject="Your OTP Code", body=email_body)
 
-        return created_response(
-            status_code=http_status.CREATED,
+        # return created_response(
+        #     status_code=status.HTTP_201_CREATED,
+        #     content={
+        #         "status":"201",
+        #         "message": "OTP generated and sent to email successfully"
+        #     }
+        # )
+        return JSONResponse(
+            status_code=status.HTTP_201_CREATED,
             content={
-                "status":201,
-                "message": "OTP generated and sent to email successfully"
+                "status":"201 Created",
+                "message":"Otp is Sent to email"
             }
         )
+    
     except HTTPException:
         raise
 
@@ -107,7 +116,7 @@ def verify_otp(email:str,otp:str):
         # delete after the verification
         otp_collection.delete_one({"_id":otp_record["_id"]})
 
-        return success_response(
+        return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
                 "status":"200 OK",

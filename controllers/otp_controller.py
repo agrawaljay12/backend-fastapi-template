@@ -4,7 +4,7 @@ from service.otp_service import send_otp, verify_otp
 async def send_otp_controller(request:Request):
     data = await request.json()
     email = data.get("email")
-    return await send_otp(email)
+    return send_otp(email)
 
 async def verify_otp_controller(request:Request):
     data = await request.json()

@@ -18,8 +18,8 @@ def create_server() -> FastAPI:
         CORSMiddleware,
         allow_origins= origins,
         allow_credentials = True,
-        allow_method =["*"],
-        allow_header=["*"]
+        allow_methods =["*"],
+        allow_headers=["*"]
     )
 
     # add static files from directory automatically using sttaticfiles

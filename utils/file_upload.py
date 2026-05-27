@@ -31,14 +31,14 @@ async def save_file(file:UploadFile):
             detail=f"failed to upload the file on cloundinary:{str(e)}"
         )
     
-async def save_files(files:List[UploadFile])->List[str]:
+def save_files(files:List[UploadFile])->List[str]:
     try:
         
         files_Path =[]
 
         for file in files:
 
-            file_path = await save_file(file)
+            file_path = save_file(file)
 
             files_Path.append(file_path)
 

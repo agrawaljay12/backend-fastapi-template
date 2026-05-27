@@ -15,7 +15,7 @@ def success_response(message:str, data=None,status=http_status.OK):
 def created_response(message:str, data=None,status=http_status.CREATED):
 
     return JSONResponse(
-    status_code=status,
+        status_code=status,
         content={
             "status": status,
             "message": message,

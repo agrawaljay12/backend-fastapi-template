@@ -6,22 +6,26 @@ from core import message
 from core import http_status
 from core import response
 from core import validation
+from fastapi import UploadFile,Form,File
+from utils.file_upload import save_file
 
 db = get_database()
 
 user_collection = db["users"]
 
 # create a new user function
-def create_user_service(data:dict):
+async def create_user_service(
+        name:str = Form(...),
+        email:str=Form(...),
+        password:str = Form(...),
+        file:UploadFile = File(None)
+):
     try:
 
-        name = data.get("name")
-        email = data.get("email")
-        password = data.get("password")
 
         # -----------------validate input fields-------------------
         # validate all required fields
-        validation.validate_data(data)
+        # validation.validate_data(name,email,password)
 
         # validate name format
         validation.validate_name(name)
@@ -42,11 +46,17 @@ def create_user_service(data:dict):
         # convert the plain password to hashed password before storing in database that user entered
         hashed_password = hash_password(password) 
 
+        if file:
+            profile = await save_file(file)
+        else:
+            profile ="http://localhost:8000/users/upload/default.png"
+
         # insert the user data into the database
         user_data = User(
             name=name,
             email=email,
-            password=hashed_password
+            password=hashed_password,
+            profile=profile
         )
         result = user_collection.insert_one(user_data.model_dump())
 

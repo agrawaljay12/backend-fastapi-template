@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends,Request, status
+from fastapi import APIRouter, Depends, File, Form,Request, UploadFile, status
 from controllers.user_controller import create_user, get_all_users,login_user
 from core.dependency import get_required_role
 from fastapi.responses import JSONResponse
@@ -24,8 +24,18 @@ async def home():
 # description : create a new user
 
 @router.post("/create",response_description="Create a new user")
-async def add_user(request:Request):
-    return await create_user(request)
+async def add_user(
+    name:str = Form(...),
+    email:str=Form(...),
+    password:str = Form(...),
+    file:UploadFile = File(None)
+):
+    return await create_user(
+        name = name,
+        email=email,
+        password= password,
+        file=file
+    )
 
 
 # URL: http://127.0.0.1:8000/api/v1/users/login

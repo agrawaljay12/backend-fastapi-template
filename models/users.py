@@ -5,4 +5,5 @@ class User(BaseModel):
     email:str
     password:str
     role:str = "user"  # default role is 'user'
+    profile:str ="http://localhost:8000/users/uploads/default.png" 
 
