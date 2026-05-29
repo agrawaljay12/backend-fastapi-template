@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+
+  fastapi:
+    build: .
+    container_name: fastapi_backend
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - .:/app
+
+    env_file:
+      - .env
+
+    depends_on:
+      - mongodb
+
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+    restart: always
+
+
+  mongodb:
+    image: mongo:7
+
+    container_name: mongodb_database
+
+    ports:
+      - "27017:27017"
+
+    volumes:
+      - mongodb_data:/data/db
+
+    restart: always
+
+
+volumes:
+  mongodb_data:
+

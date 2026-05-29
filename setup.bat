@@ -4,5 +4,6 @@ python -m venv venv
 :: Step 2: Activate virtual environment
 call venv\Scripts\activate
 
-:: Step 3: Install dependencies
+:: Step 3: Install dependencies & upgrade pip
+pip install --upgrade pip
 pip install -r .\requirement.txt
